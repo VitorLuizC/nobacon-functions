@@ -1,0 +1,13 @@
+root = true
+
+# Configuração padrão
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Configuração dos arquivos JavaScript
+[*.{js,json}]
+indent_size = 2
+indent_style = space

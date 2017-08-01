@@ -3,8 +3,17 @@ const request = require('request')
 const xml = require('xml2js')
 
 const mapResults = results => {
+  const names = {
+    '40010': 'SEDEX',
+    '40045': 'SEDEX a Cobrar',
+    '40215': 'SEDEX 10',
+    '40290': 'SEDEX Hoje',
+    '41106': 'PAC'
+  }
+
   return results['Servicos']['cServico']
     .map(freight => ({
+      name: names[freight['Codigo'][0]],
       code: freight['Codigo'][0],
       price: +(freight['Valor'][0].replace(',', '.') || 0),
       delivery: {

@@ -1,7 +1,8 @@
 const { Parser } = require('xml2js')
-const { Iconv } = require('iconv')
+const iconv = require('iconv-lite')
 const request = require('request')
 const functions = require('firebase-functions')
+const cors = require('cors')({ origin: true })
 
 const mapResults = results => {
   const names = {
@@ -59,9 +60,9 @@ const calcFreight = code => {
       if (err)
         reject('Erro no serviço online dos correios.')
 
-      const buffer = new Iconv('ISO-8859-1', 'UTF-8').convert(response.body)
+      const data = iconv.decode(response.body, 'ISO-8859-1')
 
-      parser.parseString(buffer.toString(), (err, results) => {
+      parser.parseString(data, (err, results) => {
         if (err)
           reject('Erro ao traduzir os dados dos correios.')
         resolve(mapResults(results))
@@ -71,17 +72,19 @@ const calcFreight = code => {
 }
 
 exports.freight = functions.https.onRequest((request, response) => {
-  const isCode = /^\d{8}$/
+  return cors(request, response, () => {
+    const isCode = /^\d{8}$/
 
-  if (!isCode.test(request.body.code)) {
-    response.status(500).send('CEP incorreto ou vazio.')
-    return
-  }
+    if (!isCode.test(request.body.code)) {
+      response.status(500).send('CEP incorreto ou vazio.')
+      return
+    }
 
-  calcFreight(request.body.code)
-    .then(data => response.send(data))
-    .catch(err => {
-      const message = typeof err === 'string' ? err : 'Erro ao calcular o frete.'
-      response.status(500).send(message)
-    })
+    calcFreight(request.body.code)
+      .then(data => response.send(data))
+      .catch(err => {
+        const message = typeof err === 'string' ? err : 'Erro ao calcular o frete.'
+        response.status(500).send(message)
+      })
+  })
 })

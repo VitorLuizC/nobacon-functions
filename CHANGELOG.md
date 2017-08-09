@@ -1,5 +1,10 @@
 # Changelog das funções da NOBACON <small>STORE</small>
 
+## 08/08/2017
+- `freight` consertada. Habilitei CORs para a requisição;
+- `freight` melhorada. Troquei o módulo `iconv` para o `iconv-lite` e reduzi
+consideravelmente o tempo de processamento.
+
 ## 06/08/2017
 - `freight` consertada. As mensagens de erro/restrição são convertidas para o
 _CHARSET_ correto e não apresentam mais erros nos acentos;
